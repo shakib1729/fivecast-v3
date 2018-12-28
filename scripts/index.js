@@ -209,7 +209,7 @@ const LOCALSTORAGE = (function(){
 
 	const remove = (index) =>{
 		if(index < savedCities.length){
-			savedCities.splice(index,i);
+			savedCities.splice(index,1);
 			localStorage.setItem('savedCities',JSON.stringify(savedCities));
 		}
 	}
@@ -222,6 +222,75 @@ const LOCALSTORAGE = (function(){
 		remove,
 		getSavedCities
 	}
+
+})();
+
+
+//////////////////////////////////////
+////////////// Saved Cities Module////////
+/////////////////////////////////////
+
+const SAVEDCITIES = (function(){
+   let container = document.querySelector('#saved-cities-wrapper');
+
+   const drawCity = (city) => {
+   	  let cityBox = document.createElement('div'),
+   	  	  cityWrapper = document.createElement('div'),
+   	  	  deleteWrapper = document.createElement('div'),
+   	  	  cityTextNode = document.createElement('h1'),
+   	  	  deleteBtn = document.createElement('button');
+
+   	  	  cityBox.classList.add('saved-city-box','flex-container');
+   	  	  cityTextNode.innerHTML = city;
+   	  	  cityTextNode.classList.add('set-city');
+   	  	  cityWrapper.classList.add('ripple','set-city');
+   		  deleteBtn.classList.add('ripple','remove-saved-city');
+   		  deleteBtn.innerHTML = '-';
+
+   	  	  cityWrapper.append(cityTextNode);
+   	  	  cityBox.append(cityWrapper);
+   	  	  deleteWrapper.append(deleteBtn);
+   	  	  cityBox.append(deleteWrapper);
+
+   	  	  container.append(cityBox);
+
+   };
+
+   const _deleteCity = (cityHTMLBtn) => {
+   		let nodes = Array.prototype.slice.call(container.children),
+   			cityWrapper = cityHTMLBtn.closest('.saved-city-box'),
+   			cityIndex = nodes.indexOf(cityWrapper);
+   			LOCALSTORAGE.remove(cityIndex);
+
+   			cityWrapper.remove();
+   };
+
+
+   //we cant add eventListener to just the button because at the beginning , we wouldnt have any 
+   // element named remove-saved-city, so we add eventListener to a parent element 
+
+   document.addEventListener('click',function(event){
+   		if(event.target.classList.contains('remove-saved-city')){
+   			_deleteCity(event.target);
+   		}
+   });
+
+    document.addEventListener('click',function(event){
+   		if(event.target.classList.contains('set-city')){
+   			let nodes = Array.prototype.slice.call(container.children),
+   			cityWrapper = event.target.closest('.saved-city-box'),
+   			cityIndex = nodes.indexOf(cityWrapper),
+   			savedCities = LOCALSTORAGE.getSavedCities();
+
+   			WEATHER.getWeather(savedCities[cityIndex],false);
+
+
+   		}
+   });
+
+    return{
+    	drawCity
+    };
 
 })();
 
@@ -313,7 +382,8 @@ const WEATHER= (function(){
 		  				}
 
 		  				if(save){
-			  			  LOCALSTORAGE.save(location);	  					
+			  			  LOCALSTORAGE.save(location);
+			  			  SAVEDCITIES.drawCity(location);	  					
 		  				}
 
 		  				let lat = res.data.results[0].geometry.lat,
@@ -356,8 +426,11 @@ window.onload = function(){
 	LOCALSTORAGE.get();
 	let cities = LOCALSTORAGE.getSavedCities();
 	if(cities.length!=0){
+		cities.forEach((city) => SAVEDCITIES.drawCity(city));
 		WEATHER.getWeather(cities[cities.length-1],false);
 	} 
+
+	else
 		UI.showApp();
 	
 	/*UI.showApp();*/

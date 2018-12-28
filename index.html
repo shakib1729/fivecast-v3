@@ -15,7 +15,8 @@
 	<link rel="stylesheet" href="./style/index.css">
 </head>
 <body>
-	<div id="app-loader" class="lds-dual-ring center "></div>
+	<div class="lds-ellipsis center" id="app-loader"><div></div><div></div><div></div><div></div></div>
+	<!-- <div id="app-loader" class="lds-dual-ring center "></div> -->
 	<!-- initially only loader will be shown and then only main elements will be shown and we hide the loader -->
 	<main hidden>
 		<button id="open-menu-btn" class="ripple">
@@ -111,14 +112,14 @@
 
 				<!-- saved cities -->
 				<div id="saved-cities-wrapper">
-					<div class="flex-container saved-city-box">
-						<div class="ripple">
-							<h1></h1>
+					<!-- <div class="flex-container saved-city-box">
+						<div class="ripple set-city">
+							<h1 class="set-city"></h1>
 						</div>
 						<div>
 							<button class="ripple remove-saved-city">-</button>
 						</div>
-					</div>
+					</div> -->
 				</div>
 			</div>
 		</section>
